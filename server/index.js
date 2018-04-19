@@ -1,35 +1,15 @@
 const grpc = require('grpc');
 
-const proto = grpc.load('proto/work_leave.proto');
+const proto_work_leave = grpc.load('proto/work_leave.proto');
+const proto_find_duplicate = grpc.load('proto/find_duplicate.proto');
 const server = new grpc.Server();
 
+const work_leave = require('./work_leave');
+const find_duplicate = require('./find_duplicate');
+
 // proto.<package_name>.<service_name>.service
-server.addService(proto.work_leave.EmployeeLeaveDaysService.service, {
-
-  eligibleForLeave(call, callback) {
-    if(call.request.requested_leave_days > 0) {
-      if(call.request.accrued_leave_days > call.request.requested_leave_days) {
-        callback(null, { eligible: true });
-      } else {
-        callback(null, { eligible: false });
-      }
-    } else {
-      callback(new Error('Invalid requested days'));
-    }
-  },
-
-  grantLeave(call, callback) {
-    let granted_leave_days = call.request.requested_leave_days;
-    let accrued_leave_days = call.request.accrued_leave_days - call.request.requested_leave_days;
-
-    callback(null, {
-      granted: true,
-      granted_leave_days,
-      accrued_leave_days
-    });
-  }
-
-});
+server.addService(proto_work_leave.work_leave.EmployeeLeaveDaysService.service, work_leave);
+server.addService(proto_find_duplicate.find_duplicate.FindDuplicateService.service, find_duplicate);
 
 server.bind('0.0.0.0:50050', grpc.ServerCredentials.createInsecure());
 
