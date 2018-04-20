@@ -3,9 +3,11 @@ const grpc = require('grpc');
 const protoPath = require('path').join(__dirname, '../..', 'proto');
 const proto_work_leave = grpc.load({ root: protoPath, file: 'work_leave.proto' });
 const proto_find_duplicate = grpc.load({ root: protoPath, file: 'find_duplicate.proto' });
+const proto_weather = grpc.load({ root: protoPath, file: 'weather.proto' });
 
 const work_leave_client = new proto_work_leave.work_leave.EmployeeLeaveDaysService('localhost:50050', grpc.credentials.createInsecure());
 const find_duplicate_client = new proto_find_duplicate.find_duplicate.FindDuplicateService('localhost:50050', grpc.credentials.createInsecure());
+const weather_client = new proto_weather.weather.WeatherService('localhost:50050', grpc.credentials.createInsecure());
 
 const employees = {
   valid: {
@@ -72,7 +74,7 @@ function requestLeave(employee) {
   });
 }
 
-// for(var employee in employees) requestLeave(employees[employee]);
+for(var employee in employees) requestLeave(employees[employee]);
 
 function findDuplicate(array) {
   find_duplicate_client.getDuplicate(array, (error, response) => {
@@ -93,3 +95,19 @@ function findDuplicate(array) {
 }
 
 for(var array in arrays) findDuplicate(arrays[array]);
+
+weather_client.getWeatherByCityName({ name: 'Jakarta' }, (error, response) => {
+  if(!error) {
+    console.log(response);
+  } else {
+    console.log("Error:", error.message);
+  }
+});
+
+weather_client.getWeatherByLatLong({ lat: 35, lon: 139 }, (error, response) => {
+  if(!error) {
+    console.log(response);
+  } else {
+    console.log("Error:", error.message);
+  }
+});

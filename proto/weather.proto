@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+// optional
+package weather;
+
+// Service. Define methods that the grpc server can expose to the client
+service WeatherService {
+  rpc getWeatherByCityName (City) returns (WeatherData);
+  rpc getWeatherByLatLong (LatLong) returns (WeatherData);
+}
+
+message City {
+  string name = 0;
+}
+
+message LatLong {
+  float lon = 0;
+  float lat = 1;
+}
+
+message Weather {
+  int32 id = 0;
+  string main = 1;
+  string description = 2;
+  string icon = 3;
+}
+
+message Main {
+  float temp = 0;
+  float pressure = 1;
+  float humidity = 2;
+  float temp_min = 3;
+  float temp_max = 4;
+}
+
+message Wind {
+  float speed = 0;
+  float deg = 1;
+}
+
+message Clouds {
+  float all = 0;
+}
+
+message Sys {
+  int32 type = 0;
+  int32 id = 1;
+  float message = 2;
+  string country = 3;
+  int64 sunrise = 4;
+  int64 sunset = 5;
+}
+
+message WeatherData {
+  LatLong coord = 0;
+  repeated Weather weather = 1;
+  string base = 2;
+  Main main = 3;
+  float visibility = 4;
+  Wind wind = 5;
+  Clouds clouds = 6;
+  float dt = 7;
+  Sys sys = 8;
+  int32 id = 9;
+  string name = 10;
+  int32 cod = 11;
+}
